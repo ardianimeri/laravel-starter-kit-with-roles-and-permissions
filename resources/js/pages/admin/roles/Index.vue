@@ -5,6 +5,7 @@ import type { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Edit, Trash2 } from 'lucide-vue-next';
 import rolesRoutes from "@/routes/admin/roles";
+import { confirmDelete } from '@/lib/alert';
 
 interface Permission {
     id: number;
@@ -33,13 +34,13 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Rolet', href: '/admin/roles' },
 ];
 
-// async function destroyRole(id: number) {
-//     const result = await confirmDelete(t('roles.confirm_delete'));
-//
-//     if (result.isConfirmed) {
-//         router.delete(`/admin/roles/${id}`);
-//     }
-// }
+async function destroyRole(id: number) {
+    const result = await confirmDelete('roles.confirm_delete');
+
+    if (result.isConfirmed) {
+        router.delete(`/admin/roles/${id}`);
+    }
+}
 </script>
 
 <template>
