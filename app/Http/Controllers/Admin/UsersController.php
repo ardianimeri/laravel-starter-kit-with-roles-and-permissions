@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -55,20 +55,17 @@ class UsersController extends Controller
      */
     public function create(Request $request): Response
     {
-        $type = $request->query('type');
+        $authUser = auth()->user();
 
         $roles = Role::query()
-            ->when($type === 'owner', function ($q) {
-                $q->where('name', 'owner');
-            })
-            ->when($type !== 'owner', function ($q) {
-                $q->whereNotIn('name', ['owner', 'super-admin']);
+
+            ->when(! $authUser->hasRole('admin'), function ($q) {
+                $q->where('name', '!=', 'admin');
             })
             ->get();
 
         return Inertia::render('admin/users/Create', [
             'roles' => $roles,
-            'selectedType' => $type,
         ]);
     }
 
@@ -80,31 +77,14 @@ class UsersController extends Controller
         $data = $request->validated();
         $role = Role::findById($data['role']);
 
-        // Auto-generate email for owners if not provided
-        $email = $data['email'] ?? null;
-        if ($role->name === 'owner' && empty($email)) {
-            $email = 'owner_'.uniqid().'@noemail.local';
-        }
+        $data['password'] = Hash::make($data['password']);
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $email,
-            'phone' => $data['phone'],
-            'country_code' => $data['country_code'],
-            'password' => ! empty($data['password']) ? Hash::make($data['password']) : null,
-        ]);
+        $user = User::create($data);
 
         $user->assignRole($role);
 
-        // If request is from modal, return back instead of redirecting to index
         if ($request->query('from_modal')) {
             return back()->with('success', 'User created successfully.');
-        }
-
-        // Redirect based on user role
-        if ($role->name === 'owner') {
-            return redirect()->route('admin.users.owners')
-                ->with('success', 'User created successfully.');
         }
 
         return redirect()->route('admin.users.index')
@@ -128,14 +108,8 @@ class UsersController extends Controller
         $authUser = auth()->user();
         $rolesQuery = Role::query();
 
-        if (! $authUser->hasRole('super-admin')) {
-            $rolesQuery->where('name', '!=', 'super-admin');
-        }
-
-        if ($user->hasRole('owner')) {
-            $rolesQuery->where('name', 'owner');
-        } else {
-            $rolesQuery->where('name', '!=', 'owner');
+        if (! $authUser->hasRole('admin')) {
+            $rolesQuery->where('name', '!=', 'admin');
         }
 
         $roles = $rolesQuery->get();
@@ -155,38 +129,11 @@ class UsersController extends Controller
     {
         $data = $request->validated();
 
-        $user->name = $data['name'];
+        $data['password'] = Hash::make($data['password']);
 
-        // Only update email if provided
-        if (! empty($data['email'])) {
-            $user->email = $data['email'];
-        }
+        $user->update($data);
 
-        // Update phone
-        if (! empty($data['phone'])) {
-            $user->phone = $data['phone'];
-        }
-
-        // Update country code
-        if (! empty($data['country_code'])) {
-            $user->country_code = $data['country_code'];
-        }
-
-        if (! empty($data['password'])) {
-            $user->password = Hash::make($data['password']);
-        }
-
-        $user->save();
-
-        if ($role = Role::findById($data['role'])) {
-            $user->syncRoles($role);
-        }
-
-        // Redirect based on user role
-        if ($user->hasRole('owner')) {
-            return redirect()->route('admin.users.owners')
-                ->with('success', 'User updated successfully.');
-        }
+        $user->syncRoles($data['role']);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');
@@ -201,15 +148,7 @@ class UsersController extends Controller
             return back()->with('error', 'You cannot delete your own account.');
         }
 
-        $isOwner = $user->hasRole('owner');
-
         $user->delete();
-
-        // Redirect based on user role
-        if ($isOwner) {
-            return redirect()->route('admin.users.owners')
-                ->with('success', 'User deleted successfully.');
-        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
