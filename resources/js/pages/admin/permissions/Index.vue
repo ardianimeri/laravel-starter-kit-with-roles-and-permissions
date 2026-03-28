@@ -11,6 +11,8 @@ import { Plus, Trash2, Shield } from 'lucide-vue-next';
 import { ref } from 'vue';
 import admin from '@/routes/admin';
 import permissionsRoutes from '@/routes/admin/permissions';
+import { useBreadcrumbs } from '@/composables/useBreadcrumbs';
+const { setBreadcrumbs } = useBreadcrumbs();
 
 interface Permission {
     id: number;
@@ -28,10 +30,10 @@ interface Props {
 
 defineProps<Props>();
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Ballina', href: admin.dashboard().url },
-    { title: 'Lejet', href: permissionsRoutes.index().url },
-];
+setBreadcrumbs([
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Permissions', href: permissionsRoutes.index().url },
+]);
 
 const showCreateForm = ref(false);
 
@@ -54,7 +56,6 @@ function formatDate(dateString: string): string {
 
 <template>
     <Head title="Lejet" />
-    <AppLayout :breadcrumbs="breadcrumbs" :show-errors-inline="false">
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
             <div class="flex items-center justify-between">
                 <div>
@@ -187,5 +188,4 @@ function formatDate(dateString: string): string {
                 </Link>
             </div>
         </div>
-    </AppLayout>
 </template>

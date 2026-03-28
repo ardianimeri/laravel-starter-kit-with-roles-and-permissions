@@ -6,6 +6,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { Edit, Trash2 } from 'lucide-vue-next';
 import rolesRoutes from "@/routes/admin/roles";
 import { confirmDelete } from '@/lib/alert';
+import { dashboard } from '@/routes';
 
 interface Permission {
     id: number;
@@ -29,10 +30,20 @@ interface Props {
 defineProps<Props>();
 
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Ballina', href: '/admin/dashboard' },
-    { title: 'Rolet', href: '/admin/roles' },
-];
+defineOptions({
+    layout: {
+        breadcrumbs: [
+            {
+                title: 'Dashboard',
+                href: dashboard(),
+            },
+            {
+                title: 'Roles',
+                href: rolesRoutes.index().url,
+            }
+        ],
+    },
+});
 
 async function destroyRole(id: number) {
     const result = await confirmDelete('roles.confirm_delete');
@@ -45,7 +56,6 @@ async function destroyRole(id: number) {
 
 <template>
     <Head :title="'roles.title'" />
-    <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
@@ -144,5 +154,4 @@ async function destroyRole(id: number) {
                 </Link>
             </div>
         </div>
-    </AppLayout>
 </template>

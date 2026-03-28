@@ -7,11 +7,11 @@ use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Http\Client\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class UsersController extends Controller
 {
@@ -23,13 +23,13 @@ class UsersController extends Controller
         $authUser = auth()->user();
         $search = $request->input('search');
 
-        $users = User::query()->whereDoesntHave('roles', function ($query) {
-            $query->where('name', 'owner');
-        })->when(! $authUser->hasRole('super-admin'), function ($query) {
-            $query->whereDoesntHave('roles', function ($q) {
-                $q->where('name', 'super-admin');
-            });
-        })
+        $users = User::query()
+            // Filters out super-admins if the logged-in user is not a super-admin
+            ->when(! $authUser->hasRole('super-admin'), function ($query) {
+                $query->whereDoesntHave('roles', function ($q) {
+                    $q->where('name', 'super-admin');
+                });
+            })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', '%'.$search.'%')
@@ -44,7 +44,6 @@ class UsersController extends Controller
 
         return Inertia::render('admin/users/Index', [
             'users' => $users,
-            'isOwners' => false,
             'filters' => [
                 'search' => $search,
             ],

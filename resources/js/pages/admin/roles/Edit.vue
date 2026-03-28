@@ -10,6 +10,9 @@ import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import rolesRoutes from '@/routes/admin/roles';
 import permissionsRoutes from '@/routes/admin/permissions';
+import { dashboard } from '@/routes';
+import { useBreadcrumbs } from '@/composables/useBreadcrumbs';
+const { setBreadcrumbs } = useBreadcrumbs();
 
 interface Permission {
     id: number;
@@ -28,6 +31,12 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+setBreadcrumbs([
+    { title: 'Dashboard', href: dashboard() },
+    { title: 'Roles', href: rolesRoutes.index().url },
+    { title: 'Edit', href: rolesRoutes.edit(props.role.id).url },
+]);
 
 const selected = ref<number[]>(props.role.permissions.map((p) => p.id));
 
@@ -52,16 +61,10 @@ function onTogglePermission(id: number, value: boolean | 'indeterminate') {
     }
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Ballina', href: '/admin/dashboard' },
-    { title: 'Rolet', href: rolesRoutes.index().url },
-    { title: 'Ndrysho', href: rolesRoutes.edit(props.role.id).url },
-];
 </script>
 
 <template>
     <Head :title="`Edit Role: ${props.role.name}`" />
-    <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
@@ -137,5 +140,4 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </Form>
         </div>
-    </AppLayout>
 </template>

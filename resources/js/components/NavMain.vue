@@ -29,7 +29,7 @@ const { isCurrentUrl } = useCurrentUrl();
 <template>
     <!-- Loop through each group (the outer arrays) -->
     <SidebarGroup v-for="(group, index) in items" :key="index" class="px-2 py-0">
-        <SidebarGroupLabel v-if="index === 1">Platform</SidebarGroupLabel>
+        <SidebarGroupLabel v-if="index === 1">Admin Platform</SidebarGroupLabel>
         <SidebarMenu>
             <template v-for="item in group" :key="item.title">
                 <!-- If item has sub-items, render a Collapsible menu -->

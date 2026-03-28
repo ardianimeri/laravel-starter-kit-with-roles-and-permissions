@@ -36,7 +36,7 @@ const mainNavItems: NavItem[][] = [
     ],
     [
         {
-            title: 'Staff',
+            title: 'Manage Users',
             href: '#',
             icon: UserRoundCogIcon,
             show:
@@ -47,7 +47,7 @@ const mainNavItems: NavItem[][] = [
                 ...(can('read users')
                     ? [
                         {
-                            title: 'Staff',
+                            title: 'Users',
                             href: users.index(),
                         },
                     ]

@@ -8,6 +8,8 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { useBreadcrumbs } from '@/composables/useBreadcrumbs';
+const { setBreadcrumbs } = useBreadcrumbs();
 
 interface Permission {
     id: number;
@@ -41,16 +43,15 @@ function onTogglePermission(id: number, value: boolean | 'indeterminate') {
     }
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '/admin/dashboard' },
+setBreadcrumbs([
+    { title: 'Dashboard', href: '/dashboard' },
     { title: 'Roles', href: '/admin/roles' },
     { title: 'Create', href: '/admin/roles/create' },
-];
+]);
 </script>
 
 <template>
     <Head title="Create Role" />
-    <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
@@ -121,5 +122,4 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </Form>
         </div>
-    </AppLayout>
 </template>
