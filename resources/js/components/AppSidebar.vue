@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, FolderGit2, LayoutGrid, UserRoundCogIcon } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -14,15 +14,58 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useCan } from '@/composables/useCan';
 import { dashboard } from '@/routes';
+import permissionsRoutes from '@/routes/admin/permissions';
+import roles from '@/routes/admin/roles';
+import users from '@/routes/admin/users';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
+
+const can = useCan();
+
+
+const mainNavItems: NavItem[][] = [
+    [
+        {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
-    },
+            show: true
+        },
+    ],
+    [
+        {
+            title: 'Staff',
+            href: '#',
+            icon: UserRoundCogIcon,
+            show:
+                can('read users') ||
+                can('read roles') ||
+                can('read permissions'),
+            subItems: [
+                ...(can('read users')
+                    ? [
+                        {
+                            title: 'Staff',
+                            href: users.index(),
+                        },
+                    ]
+                    : []),
+                ...(can('read roles')
+                    ? [{ title: 'Roles', href: roles.index() }]
+                    : []),
+                ...(can('read permissions')
+                    ? [
+                        {
+                            title: 'Permissions',
+                            href: permissionsRoutes.index(),
+                        },
+                    ]
+                    : []),
+            ],
+        },
+    ]
 ];
 
 const footerNavItems: NavItem[] = [
