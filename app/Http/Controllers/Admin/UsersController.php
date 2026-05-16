@@ -129,11 +129,22 @@ class UsersController extends Controller
     {
         $data = $request->validated();
 
-        $data['password'] = Hash::make($data['password']);
+        $user->name = $data['name'];
 
-        $user->update($data);
+        // Only update email if provided
+        if (! empty($data['email'])) {
+            $user->email = $data['email'];
+        }
 
-        $user->syncRoles($data['role']);
+        if (! empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
+
+        if ($role = Role::findById($data['role'])) {
+            $user->syncRoles($role);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');

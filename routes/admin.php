@@ -12,12 +12,11 @@ Route::name('admin.')->prefix('admin')->group(function () {
             'can:update users',
             'can:create users',
             'can:delete users',
-            'can:read users',
         ];
 
         Route::get('users', [UsersController::class, 'index'])
             ->name('users.index')
-            ->middleware($userMiddleware);
+            ->middleware('can:read users');
 
         Route::resource('users', UsersController::class)
             ->except(['index', 'show'])
