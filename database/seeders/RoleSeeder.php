@@ -15,23 +15,25 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Permission::firstOrCreate(['name' => 'create users']);
-        Permission::firstOrCreate(['name' => 'read users']);
-        Permission::firstOrCreate(['name' => 'update users']);
-        Permission::firstOrCreate(['name' => 'delete users']);
-        Permission::firstOrCreate(['name' => 'create roles']);
-        Permission::firstOrCreate(['name' => 'read roles']);
-        Permission::firstOrCreate(['name' => 'update roles']);
-        Permission::firstOrCreate(['name' => 'delete roles']);
-        Permission::firstOrCreate(['name' => 'create permissions']);
-        Permission::firstOrCreate(['name' => 'read permissions']);
-        Permission::firstOrCreate(['name' => 'update permissions']);
-        Permission::firstOrCreate(['name' => 'delete permissions']);
+        Permission::firstOrCreate(['name' => 'create-users']);
+        Permission::firstOrCreate(['name' => 'read-users']);
+        Permission::firstOrCreate(['name' => 'update-users']);
+        Permission::firstOrCreate(['name' => 'delete-users']);
+        Permission::firstOrCreate(['name' => 'create-roles']);
+        Permission::firstOrCreate(['name' => 'read-roles']);
+        Permission::firstOrCreate(['name' => 'update-roles']);
+        Permission::firstOrCreate(['name' => 'delete-roles']);
+        Permission::firstOrCreate(['name' => 'create-permissions']);
+        Permission::firstOrCreate(['name' => 'read-permissions']);
+        Permission::firstOrCreate(['name' => 'update-permissions']);
+        Permission::firstOrCreate(['name' => 'delete-permissions']);
 
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $adminRole->givePermissionTo(Permission::all());
 
         $user = User::first();
         $user->assignRole($adminRole);
+
+        Role::firstOrCreate(['name' => 'user']);
     }
 }

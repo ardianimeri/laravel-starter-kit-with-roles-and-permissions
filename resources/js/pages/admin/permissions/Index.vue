@@ -13,6 +13,7 @@ import admin from '@/routes/admin';
 import permissionsRoutes from '@/routes/admin/permissions';
 import { useBreadcrumbs } from '@/composables/useBreadcrumbs';
 const { setBreadcrumbs } = useBreadcrumbs();
+import { useCan } from "@/composables/useCan";
 
 interface Permission {
     id: number;
@@ -36,9 +37,10 @@ setBreadcrumbs([
 ]);
 
 const showCreateForm = ref(false);
+const can = useCan();
 
 async function destroyPermission(id: number) {
-    const result = await confirmDelete('A jeni të sigurt që doni të fshini këtë leje?');
+    const result = await confirmDelete('Are you sure you want to delete this permission?');
 
     if (result.isConfirmed) {
         router.delete(permissionsRoutes.destroy(id).url);
@@ -55,16 +57,16 @@ function formatDate(dateString: string): string {
 </script>
 
 <template>
-    <Head title="Lejet" />
+    <Head title="Permissions" />
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-xl font-semibold">Lejet</h1>
-                    <p class="text-sm text-muted-foreground">Menaxho lejet e sistemit</p>
+                    <h1 class="text-xl font-semibold">Permissions</h1>
+                    <p class="text-sm text-muted-foreground">Manage permissions</p>
                 </div>
-                <Button @click="showCreateForm = !showCreateForm" size="sm">
+                <Button v-if="can('create-permission')" @click="showCreateForm = !showCreateForm" size="sm">
                     <Plus class="mr-2 h-4 w-4" />
-                    {{ showCreateForm ? 'Anulo' : 'Krijo Leje' }}
+                    {{ showCreateForm ? 'Cancel' : 'Create Permission' }}
                 </Button>
             </div>
 
@@ -74,8 +76,8 @@ function formatDate(dateString: string): string {
                 class="rounded-lg border bg-card p-4 shadow-sm transition-all duration-300 animate-in fade-in slide-in-from-top-2"
             >
                 <div class="mb-4">
-                    <h3 class="text-sm font-semibold">Krijo Leje të Re</h3>
-                    <p class="text-xs text-muted-foreground">Shto një leje të re në sistem</p>
+                    <h3 class="text-sm font-semibold">Create new Permission</h3>
+                    <p class="text-xs text-muted-foreground">Add new permission</p>
                 </div>
 
                 <Form
@@ -86,7 +88,7 @@ function formatDate(dateString: string): string {
                 >
                     <div class="grid gap-4 md:grid-cols-2">
                         <div class="grid gap-2">
-                            <Label for="name">Emri i Lejes</Label>
+                            <Label for="name">Name of Permission</Label>
                             <Input
                                 id="name"
                                 name="name"
@@ -110,8 +112,8 @@ function formatDate(dateString: string): string {
 
                     <div class="flex justify-end">
                         <Button type="submit" :disabled="processing">
-                            <span v-if="processing">Duke krijuar...</span>
-                            <span v-else>Krijo Lejen</span>
+                            <span v-if="processing">Creating...</span>
+                            <span v-else>Create Permission</span>
                         </Button>
                     </div>
                 </Form>
@@ -122,10 +124,10 @@ function formatDate(dateString: string): string {
                 <table class="w-full text-left text-sm">
                     <thead class="bg-muted/50">
                     <tr>
-                        <th class="px-4 py-3">Emri</th>
+                        <th class="px-4 py-3">Name</th>
                         <th class="px-4 py-3">Guard Name</th>
-                        <th class="px-4 py-3">Krijuar më</th>
-                        <th class="px-4 py-3 text-right">Veprimet</th>
+                        <th class="px-4 py-3">Created at</th>
+                        <th class="px-4 py-3 text-right">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -142,7 +144,7 @@ function formatDate(dateString: string): string {
                             {{ formatDate(permission.created_at) }}
                         </td>
                         <td class="px-4 py-3 text-right">
-                            <Button
+                            <Button v-if="can('delete-permission')"
                                 variant="ghost"
                                 size="sm"
                                 class="text-destructive hover:bg-destructive/10"
@@ -163,10 +165,10 @@ function formatDate(dateString: string): string {
             >
                 <Shield class="mb-3 h-12 w-12 text-muted-foreground/30" />
                 <p class="text-sm font-medium text-muted-foreground">
-                    Nuk ka të dhëna
+                    No data
                 </p>
                 <p class="mt-1 text-xs text-muted-foreground">
-                    Kliko butonin "Krijo Leje" për të filluar
+                    Click button "Create Permission" to get started
                 </p>
             </div>
 

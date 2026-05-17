@@ -40,11 +40,11 @@ const mainNavItems: NavItem[][] = [
             href: '#',
             icon: UserRoundCogIcon,
             show:
-                can('read users') ||
-                can('read roles') ||
-                can('read permissions'),
+                can('read-users') ||
+                can('read-roles') ||
+                can('read-permissions'),
             subItems: [
-                ...(can('read users')
+                ...(can('read-users')
                     ? [
                         {
                             title: 'Users',
@@ -52,10 +52,10 @@ const mainNavItems: NavItem[][] = [
                         },
                     ]
                     : []),
-                ...(can('read roles')
+                ...(can('read-roles')
                     ? [{ title: 'Roles', href: roles.index() }]
                     : []),
-                ...(can('read permissions')
+                ...(can('read-permissions')
                     ? [
                         {
                             title: 'Permissions',
