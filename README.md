@@ -9,9 +9,9 @@ A cutting-edge, professional starter kit for building SaaS applications and Admi
 ##  Features
 
 -  Full RBAC Integration: Powered by [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission). Manage Users, Roles, and Permissions seamlessly.
--  Laravel 13 Ready: Utilizes the latest v13 slim structure and improved routing patterns.
+-  Laravel 13 Ready: Utilizes the latest v13 structure and improved routing patterns.
 -  Modern Frontend: Vue 3 (Composition API) + Inertia.js for a smooth SPA experience without the API complexity.
--  Shadcn UI & Tailwind: Beautifully styled with a focus on dark mode and accessibility.
+-  Shadcn UI & Tailwind.
 -  Production-Ready CRUDs:
     - User Management: Full search, pagination, and role synchronization.
     - Role Management: Create and assign permissions to roles.
